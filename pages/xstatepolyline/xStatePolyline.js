@@ -16,15 +16,59 @@ let polyline // La polyline en cours de construction;
 
 const polylineMachine = createMachine(
     {
-        /** @xstate-layout N4IgpgJg5mDOIC5gF8A0IB2B7CdGgAcsAbATwBkBLDMfEI2SgF0qwzoA9EBaANnVI9eAOgAM4iZMkB2ZGnokK1MMMoRitJAsYs2nRABYATAMQAOAIzCD0gJwXetgwGZezgw9ty5QA */
-        id: "polyLine",
+        id: "Polyline",
         initial: "idle",
-        states : {
-            idle: {
-            }
-        }
-    },
-    // Quelques actions et guardes que vous pouvez utiliser dans votre machine
+        states: {
+          idle: {
+            on: {
+              MOUSECLICK: {
+                target: "drawing",
+                actions: {
+                  type: "createLine",
+                },
+              },
+            },
+          },
+          drawing: {
+            on: {
+              MOUSECLICK: {
+                target: "drawing",
+                cond: "pasPlein",
+                actions: {
+                  type: "addPoint",
+                },
+              },
+              MOUSEMOVE: {
+                target: "drawing",
+                actions: {
+                  type: "setLastPoint",
+                },
+              },
+              Escape: {
+                target: "idle",
+                actions: {
+                  type: "abandon",
+                },
+              },
+              Enter: {
+                target: "idle",
+                cond: "plusDeDeuxPoints",
+                actions: {
+                  type: "saveLine",
+                },
+              },
+              Backspace: {
+                target: "drawing",
+                cond: "plusDeDeuxPoints",
+                actions: {
+                  type: "removeLastPoint",
+                },
+              },
+            },
+          },
+        },
+      },
+      // Quelques actions et guardes que vous pouvez utiliser dans votre machine
     {
         actions: {
             // Créer une nouvelle polyline
